@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест Telegram Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .config {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .config p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 Тест Telegram Bot</h1>
+        
+        <div class="config">
+            <h3>📋 Текущие настройки:</h3>
+            <p><strong>Bot Token:</strong> <span id="botToken">Загрузка...</span></p>
+            <p><strong>Chat ID 1:</strong> <span id="chatId1">Загрузка...</span></p>
+            <p><strong>Chat ID 2:</strong> <span id="chatId2">Загрузка...</span></p>
+        </div>
+
+        <div id="status" class="status info">
+            Готов к тестированию
+        </div>
+
+        <button id="testBtn" onclick="testTelegramBot()">
+            🚀 Отправить тестовое сообщение
+        </button>
+
+        <button onclick="clearLog()" style="background: #ff9800;">
+            🗑️ Очистить лог
+        </button>
+
+        <div id="log"></div>
+    </div>
+
+    <!-- Подключаем telegram_bot.js -->
+    <script src="telegram_bot.js"></script>
+
+    <script>
+        // Показываем настройки
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof TELEGRAM_CONFIG !== 'undefined') {
+                document.getElementById('botToken').textContent = TELEGRAM_CONFIG.botToken.substring(0, 20) + '...';
+                document.getElementById('chatId1').textContent = TELEGRAM_CONFIG.chatIds[0] || 'Не указан';
+                document.getElementById('chatId2').textContent = TELEGRAM_CONFIG.chatIds[1] || 'Не указан';
+            } else {
+                log('❌ TELEGRAM_CONFIG не найден!', 'error');
+            }
+        });
+
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString('ru-RU');
+            const color = type === 'error' ? '#ff4444' : type === 'success' ? '#00ff00' : '#00ccff';
+            logDiv.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+        }
+
+        async function testTelegramBot() {
+            const testBtn = document.getElementById('testBtn');
+            testBtn.disabled = true;
+            testBtn.textContent = '⏳ Отправка...';
+            
+            log('🚀 Начинаем тест Telegram Bot...', 'info');
+            showStatus('Отправка тестового сообщения...', 'info');
+
+            // Тестовые данные
+            const testData = {
+                name: 'Тестовый пользователь',
+                phone: '+7 999 999 99 99',
+                email: 'test@example.com',
+                service: 'video',
+                message: 'Это тестовое сообщение для проверки работы Telegram Bot'
+            };
+
+            log('📦 Тестовые данные подготовлены', 'info');
+            log(`   Имя: ${testData.name}`, 'info');
+            log(`   Телефон: ${testData.phone}`, 'info');
+
+            try {
+                // Проверяем наличие функции
+                if (typeof window.sendEmailFree100 !== 'function') {
+                    throw new Error('Функция sendEmailFree100 не найдена!');
+                }
+
+                log('✅ Функция sendEmailFree100 найдена', 'success');
+                log('📤 Вызываем sendEmailFree100()...', 'info');
+
+                // Отправляем
+                const result = await window.sendEmailFree100(testData);
+
+                log('📥 Получен ответ от функции', 'info');
+
+                if (result.success) {
+                    log('✅ УСПЕХ! Сообщение отправлено!', 'success');
+                    log('📱 Проверьте Telegram - должно прийти уведомление', 'success');
+                    showStatus('✅ Тестовое сообщение отправлено! Проверьте Telegram.', 'success');
+                    
+                    // Показываем детали
+                    if (result.message) {
+                        log('📋 Детали ответа:', 'info');
+                        result.message.split('\n').forEach(line => {
+                            if (line.trim()) log('   ' + line, 'info');
+                        });
+                    }
+                } else {
+                    log('❌ Ошибка: ' + (result.error || 'Неизвестная ошибка'), 'error');
+                    showStatus('❌ Ошибка при отправке. Смотрите лог.', 'error');
+                }
+
+            } catch (error) {
+                log('❌ КРИТИЧЕСКАЯ ОШИБКА: ' + error.message, 'error');
+                log('🔍 Stack trace:', 'error');
+                log(error.stack, 'error');
+                showStatus('❌ Критическая ошибка. Смотрите лог.', 'error');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = '🚀 Отправить тестовое сообщение';
+            }
+        }
+
+        // Логируем загрузку
+        log('✅ Тестовая страница загружена', 'success');
+        log('🔍 Проверяем доступность функций...', 'info');
+
+        setTimeout(() => {
+            if (typeof window.sendEmailFree100 === 'function') {
+                log('✅ window.sendEmailFree100 доступна', 'success');
+            } else {
+                log('❌ window.sendEmailFree100 НЕ найдена', 'error');
+            }
+
+            if (typeof TELEGRAM_CONFIG !== 'undefined') {
+                log('✅ TELEGRAM_CONFIG загружен', 'success');
+                log(`   Bot Token: ${TELEGRAM_CONFIG.botToken.substring(0, 20)}...`, 'info');
+                log(`   Получателей: ${TELEGRAM_CONFIG.chatIds.length}`, 'info');
+            } else {
+                log('❌ TELEGRAM_CONFIG НЕ загружен', 'error');
+            }
+
+            log('', 'info');
+            log('✅ Готов к тестированию! Нажмите кнопку выше.', 'success');
+        }, 500);
+    </script>
+</body>
+</html>
+

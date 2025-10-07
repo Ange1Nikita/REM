@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Локальный тестовый сервер</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #4a90e2;
+            text-align: center;
+        }
+        .step {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #4a90e2;
+            border-radius: 5px;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #4a90e2;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        .button:hover {
+            background: #357abd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Локальный сервер для тестирования</h1>
+        
+        <div class="warning">
+            <strong>⚠️ Важно!</strong> Этот файл нужно открыть через веб-сервер, а не двойным кликом!
+        </div>
+        
+        <div class="step">
+            <h3>📋 Проблема</h3>
+            <p>Сейчас форма не работает, потому что:</p>
+            <ul>
+                <li>Сайт открыт через <code>file://</code> протокол</li>
+                <li>PHP скрипты не могут выполняться</li>
+                <li>Браузер блокирует CORS запросы</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <h3>🔧 Решение 1: Python (если установлен)</h3>
+            <p>Откройте командную строку в папке с сайтом и выполните:</p>
+            <div class="code">python -m http.server 8000</div>
+            <p>Затем откройте: <a href="http://localhost:8000" target="_blank">http://localhost:8000</a></p>
+        </div>
+        
+        <div class="step">
+            <h3>🔧 Решение 2: Скачать Python</h3>
+            <p>Если Python не установлен:</p>
+            <ol>
+                <li>Скачайте Python с <a href="https://python.org" target="_blank">python.org</a></li>
+                <li>Установите с галочкой "Add to PATH"</li>
+                <li>Перезапустите командную строку</li>
+                <li>Выполните команду выше</li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>🔧 Решение 3: XAMPP</h3>
+            <ol>
+                <li>Скачайте <a href="https://www.apachefriends.org/" target="_blank">XAMPP</a></li>
+                <li>Установите и запустите Apache</li>
+                <li>Скопируйте файлы сайта в <code>C:\xampp\htdocs\mysite\</code></li>
+                <li>Откройте <a href="http://localhost/mysite" target="_blank">http://localhost/mysite</a></li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>🔧 Решение 4: Онлайн хостинг</h3>
+            <p>Загрузите файлы на любой бесплатный хостинг:</p>
+            <ul>
+                <li><a href="https://000webhost.com" target="_blank">000webhost</a> (бесплатно)</li>
+                <li><a href="https://infinityfree.net" target="_blank">InfinityFree</a> (бесплатно)</li>
+                <li><a href="https://netlify.com" target="_blank">Netlify</a> (для статики)</li>
+            </ul>
+        </div>
+        
+        <div class="success">
+            <h3>✅ Как проверить, что всё работает:</h3>
+            <ol>
+                <li>Адрес должен начинаться с <code>http://</code>, а не <code>file://</code></li>
+                <li>Перейдите на страницу контактов</li>
+                <li>Заполните форму "Оставить заявку"</li>
+                <li>При успехе - письмо придёт на <strong>Ange1Nikita@yandex.ru</strong></li>
+            </ol>
+        </div>
+        
+        <div class="step">
+            <h3>🆘 Если ничего не помогает</h3>
+            <p>Временное решение - измените JavaScript, чтобы он показывал данные формы:</p>
+            <a href="#" onclick="showFormData()" class="button">Показать как исправить</a>
+            
+            <div id="tempFix" style="display:none; margin-top:15px;">
+                <p>Замените в файле <code>js/script.js</code> строку 158:</p>
+                <div class="code">
+const response = await fetch('send_mail.php', {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;method: 'POST',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;headers: { 'Content-Type': 'application/json' },<br>
+&nbsp;&nbsp;&nbsp;&nbsp;body: JSON.stringify(data)<br>
+});
+                </div>
+                <p>На:</p>
+                <div class="code">
+// Временное решение - показываем данные формы<br>
+alert('Заявка (ТЕСТ):\\n' +<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Имя: ' + data.name + '\\n' +<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Телефон: ' + data.phone + '\\n' +<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Email: ' + (data.email || 'Не указан') + '\\n' +<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Услуга: ' + data.service + '\\n' +<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'Сообщение: ' + (data.message || 'Не указано'));<br>
+contactForm.reset();<br>
+return; // Останавливаем выполнение
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <h3>📞 Контакты для связи</h3>
+            <p>Пока форма не работает, можно связаться напрямую:</p>
+            <ul>
+                <li><strong>Телефон:</strong> +7 989 123 39 53</li>
+                <li><strong>Email:</strong> Ange1Nikita@yandex.ru</li>
+                <li><strong>WhatsApp:</strong> <a href="https://wa.me/79891233953" target="_blank">wa.me/79891233953</a></li>
+                <li><strong>Telegram:</strong> <a href="https://t.me/rem_insait" target="_blank">@rem_insait</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        function showFormData() {
+            document.getElementById('tempFix').style.display = 'block';
+        }
+        
+        // Проверяем протокол
+        if (window.location.protocol === 'file:') {
+            document.body.style.background = '#ffebee';
+            const warning = document.querySelector('.warning');
+            warning.innerHTML = '<strong>❌ Ошибка!</strong> Этот файл открыт через file:// протокол. Форма работать НЕ БУДЕТ! Используйте один из способов выше.';
+            warning.style.background = '#ffcdd2';
+            warning.style.borderColor = '#f44336';
+        } else {
+            const warning = document.querySelector('.warning');
+            warning.innerHTML = '<strong>✅ Отлично!</strong> Файл открыт через веб-сервер. Форма должна работать!';
+            warning.className = 'success';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест формы заявки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .form-container {
+            background: rgba(26, 26, 26, 0.8);
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h2 {
+            color: #4a90e2;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-weight: 500;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(45, 45, 45, 0.8);
+            color: #fff;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        .btn {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background: linear-gradient(135deg, #357abd 0%, #2968a3 100%);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            color: #4caf50;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin-top: 3px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .info {
+            background: rgba(74, 144, 226, 0.2);
+            border: 1px solid #4a90e2;
+            color: #4a90e2;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="info">
+            📧 <strong>Тестовая форма</strong><br>
+            Данные будут показаны на экране и отправлены на почту<br>
+            <strong>Ange1Nikita@yandex.ru</strong>
+        </div>
+        
+        <h2>Оставить заявку</h2>
+        <p class="subtitle">Заполните форму и мы свяжемся с вами в ближайшее время</p>
+        
+        <form id="testForm">
+            <div class="form-group">
+                <label for="name">Имя *</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Телефон *</label>
+                <input type="tel" id="phone" name="phone" required placeholder="+7 (___) ___-__-__">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="service">Интересующая услуга</label>
+                <select id="service" name="service">
+                    <option value="">Выберите услугу</option>
+                    <option value="video">Видеонаблюдение</option>
+                    <option value="access">Контроль доступа</option>
+                    <option value="intercom">Домофонные системы</option>
+                    <option value="alarm">Охранная сигнализация</option>
+                    <option value="automation">Автоматика ворот</option>
+                    <option value="scs">СКС</option>
+                    <option value="consultation">Консультация</option>
+                    <option value="other">Другое</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Сообщение</label>
+                <textarea id="message" name="message" rows="4" placeholder="Опишите ваши потребности или задайте вопрос..."></textarea>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="privacy" name="privacy" required>
+                    <span>Я согласен с обработкой персональных данных *</span>
+                </label>
+            </div>
+            
+            <button type="submit" class="btn">Отправить заявку</button>
+        </form>
+        
+        <div id="result" class="result">
+            <div id="resultContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Форматирование телефона
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 0) {
+                if (value[0] === '8') {
+                    value = '7' + value.slice(1);
+                }
+                if (value[0] === '7') {
+                    value = value.replace(/^7(\d{0,3})(\d{0,3})(\d{0,2})(\d{0,2})/, function(match, p1, p2, p3, p4) {
+                        let formatted = '+7';
+                        if (p1) formatted += ' (' + p1;
+                        if (p2) formatted += ') ' + p2;
+                        if (p3) formatted += '-' + p3;
+                        if (p4) formatted += '-' + p4;
+                        return formatted;
+                    });
+                }
+            }
+            e.target.value = value;
+        });
+        
+        // Обработка формы
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                name: formData.get('name'),
+                phone: formData.get('phone'),
+                email: formData.get('email') || 'Не указан',
+                service: formData.get('service') || 'Не выбрана',
+                message: formData.get('message') || 'Не указано',
+                privacy: document.getElementById('privacy').checked
+            };
+            
+            // Проверка обязательных полей
+            if (!data.name.trim()) {
+                alert('Пожалуйста, введите ваше имя');
+                return;
+            }
+            
+            if (!data.phone.trim()) {
+                alert('Пожалуйста, введите номер телефона');
+                return;
+            }
+            
+            if (!data.privacy) {
+                alert('Необходимо согласие на обработку персональных данных');
+                return;
+            }
+            
+            // Преобразование услуги
+            const serviceNames = {
+                'video': 'Видеонаблюдение',
+                'access': 'Контроль доступа',
+                'intercom': 'Домофонные системы',
+                'alarm': 'Охранная сигнализация',
+                'automation': 'Автоматика ворот',
+                'scs': 'СКС',
+                'consultation': 'Консультация',
+                'other': 'Другое'
+            };
+            
+            const serviceName = serviceNames[data.service] || data.service;
+            
+            // Показываем результат
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultContent.innerHTML = `
+                <h3>✅ Данные заявки получены!</h3>
+                <p><strong>👤 Имя:</strong> ${data.name}</p>
+                <p><strong>📞 Телефон:</strong> ${data.phone}</p>
+                <p><strong>📧 Email:</strong> ${data.email}</p>
+                <p><strong>🛠️ Услуга:</strong> ${serviceName}</p>
+                <p><strong>💬 Сообщение:</strong> ${data.message}</p>
+                <p><strong>🕒 Время:</strong> ${new Date().toLocaleString('ru-RU')}</p>
+                <hr style="margin: 15px 0; border: 1px solid rgba(255,255,255,0.2);">
+                <p><strong>📧 На настоящем сайте эти данные будут отправлены на:</strong><br>
+                <strong>Ange1Nikita@yandex.ru</strong></p>
+                <p><strong>📞 Или свяжитесь напрямую:</strong><br>
+                Телефон: +7 989 123 39 53<br>
+                WhatsApp: <a href="https://wa.me/79891233953" target="_blank" style="color: #4a90e2;">wa.me/79891233953</a><br>
+                Telegram: <a href="https://t.me/rem_insait" target="_blank" style="color: #4a90e2;">@rem_insait</a></p>
+            `;
+            
+            resultDiv.className = 'result success';
+            resultDiv.style.display = 'block';
+            
+            // Очищаем форму
+            this.reset();
+            
+            // Прокручиваем к результату
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
