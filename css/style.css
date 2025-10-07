@@ -338,6 +338,9 @@ a:hover {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    justify-content: center; /* всегда по центру на всех ширинах */
+    align-items: center;
+    width: 100%; /* растягиваем контейнер на всю ширину колонки */
 }
 
 .hero-image {
@@ -2319,7 +2322,7 @@ a:hover {
     }
     
     .hero-cta {
-        justify-content: center;
+        justify-content: center; /* центр на планшетах */
     }
     
     /* Заголовки используют clamp() и адаптируются автоматически */
@@ -2477,7 +2480,8 @@ a:hover {
     /* Заголовки используют clamp() и адаптируются автоматически */
     
     .hero-cta {
-        flex-direction: column;
+        flex-direction: column; /* на очень узких экранах столбцом, но по центру */
+        align-items: center;
     }
     
     .btn {

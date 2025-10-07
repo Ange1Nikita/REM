@@ -46,7 +46,7 @@
     https://web.whatsapp.com/send?phone=79891233953
 
 [ ] Ссылка Telegram правильная:
-    https://web.telegram.org/k/#7706008166
+    https://web.telegram.org/k/#@Vyacheslav_REMINSAID
 
 [ ] Ссылка Instagram правильная:
     https://instagram.com/rem_insait

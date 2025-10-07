@@ -13,6 +13,91 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
     }
+
+    // Smart links for WhatsApp / Telegram: корректно открываем чат на мобиле и веб на десктопе
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
+    function setupSmartMessengerLinks() {
+        const waSelectors = [
+            'a.contact-link.whatsapp',
+            'a.contact-value[href*="whatsapp"], a.contact-value[href*="wa.me"]'
+        ];
+        const tgSelectors = [
+            'a.contact-link.telegram',
+            'a.contact-value[href*="telegram"], a.contact-value[href*="web.telegram.org"], a.contact-value[href^="tg://"]'
+        ];
+
+        const updateLinkBehavior = (elements, getUrl) => {
+            elements.forEach(el => {
+                el.addEventListener('click', function(e) {
+                    // Всегда открываем корректную ссылку в зависимости от устройства
+                    e.preventDefault();
+                    const url = getUrl();
+                    // Используем window.open, чтобы не блокировалось
+                    window.open(url, '_blank');
+                });
+            });
+        };
+
+        // WhatsApp
+        const waElements = document.querySelectorAll(waSelectors.join(','));
+        updateLinkBehavior(waElements, () => {
+            const mobileUrl = 'https://wa.me/79891233953';
+            const desktopUrl = 'https://web.whatsapp.com/send?phone=79891233953';
+            return isMobileDevice() ? mobileUrl : desktopUrl;
+        });
+
+        // Telegram (ID: 7706008166)
+        const tgElements = document.querySelectorAll(tgSelectors.join(','));
+        updateLinkBehavior(tgElements, () => {
+            // Используем t.me — Telegram сам предложит выбор: приложение или Web
+            return 'https://t.me/Vyacheslav_REMINSAID';
+        });
+    }
+
+    setupSmartMessengerLinks();
+
+    // Небольшое модальное окно с выбором: Приложение / Браузер
+    function showMessengerChoice(title, appUrl, webUrl) {
+        const existing = document.getElementById('messenger-choice-modal');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'messenger-choice-modal';
+        overlay.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.6);z-index:10000;padding:16px;';
+
+        const box = document.createElement('div');
+        box.style.cssText = 'max-width:420px;width:100%;background:#1f1f1f;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:24px;color:#fff;font-family:inherit;box-shadow:0 12px 40px rgba(0,0,0,.4)';
+        box.innerHTML = `
+            <div style="font-size:1.1rem;font-weight:600;margin-bottom:10px;">Открыть ${title}</div>
+            <div style="color:#b0b0b0;font-size:.95rem;margin-bottom:18px;">Выберите, где открыть диалог.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+                <button id="open-app" style="flex:1;min-width:160px;padding:12px 16px;border-radius:10px;border:1px solid #4a90e2;background:#4a90e2;color:#fff;font-weight:600;cursor:pointer;">Открыть приложение</button>
+                <button id="open-web" style="flex:1;min-width:160px;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;font-weight:600;cursor:pointer;">Открыть в браузере</button>
+            </div>
+            <div style="text-align:center;margin-top:12px;">
+                <button id="close-choice" style="background:transparent;border:none;color:#b0b0b0;cursor:pointer">Отмена</button>
+            </div>
+        `;
+
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+
+        box.querySelector('#close-choice').addEventListener('click', () => overlay.remove());
+        overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+        box.querySelector('#open-app').addEventListener('click', () => {
+            window.location.href = appUrl;
+            setTimeout(() => { window.open(webUrl, '_blank'); }, 800);
+            overlay.remove();
+        });
+        box.querySelector('#open-web').addEventListener('click', () => {
+            window.open(webUrl, '_blank');
+            overlay.remove();
+        });
+    }
     const burgerMenu = document.querySelector('.burger-menu');
     const navMenu = document.querySelector('.nav-menu');
     
@@ -304,15 +389,12 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(checkStatsVisibility, 100);
 });
 
-// Utility function to check if element is in viewport
+// Utility: consider element visible when верх попадает в зону видимости на 20–30%
 function isInViewport(element) {
     const rect = element.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    // Триггерим, когда верх элемента появился в нижних 80% окна и элемент ещё не ушёл выше
+    return rect.top < viewportHeight * 0.9 && rect.bottom > 0;
 }
 
 // Counter animation for stats
@@ -362,10 +444,9 @@ function checkStatsVisibility() {
     }
 }
 
-// Animation on scroll
-window.addEventListener('scroll', function() {
+// Обработчик анимаций (вызываем при загрузке и при скролле)
+function processScrollAnimations() {
     const animatedElements = document.querySelectorAll('.product-card, .brand-card, .service-card, .advantage-item');
-    
     animatedElements.forEach(element => {
         if (isInViewport(element) && !element.classList.contains('animated')) {
             element.classList.add('animated');
@@ -373,7 +454,21 @@ window.addEventListener('scroll', function() {
             element.style.transform = 'translateY(0)';
         }
     });
-    
-    // Проверяем видимость счетчиков
     checkStatsVisibility();
+}
+
+// Стартовая инициализация без ожидания скролла (особенно важно на мобильных)
+document.addEventListener('DOMContentLoaded', function() {
+    // Небольшая задержка, чтобы избежать сдвигов макета
+    setTimeout(processScrollAnimations, 50);
+});
+
+// Троттлим обработчик прокрутки для производительности
+let scrollTimeout;
+window.addEventListener('scroll', function() {
+    if (scrollTimeout) return;
+    scrollTimeout = setTimeout(() => {
+        processScrollAnimations();
+        scrollTimeout = null;
+    }, 50);
 });
