@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.rem-insight.ru/sitemap.xml
+
+# Основные страницы
+Allow: /index.html
+Allow: /services.html
+Allow: /about.html
+Allow: /contacts.html
+
